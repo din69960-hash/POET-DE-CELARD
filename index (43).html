@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Poêt de Celard — Refuge des Pingouins de l'espace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --nuit:#1c2742;
+  --nuit-2:#28365c;
+  --encre:#2b3350;
+  --laine:#f7f1e6;
+  --laine-2:#efe6d4;
+  --miel:#e8a33d;
+  --miel-doux:#f6d9a8;
+  --sapin:#4a7a5e;
+  --sapin-doux:#dceadf;
+  --ciel:#4d7fb5;
+  --brique:#c4573b;
+  --ambre:#d98e2b;
+  --blanc:#fffdf8;
+  --ombre:0 10px 30px rgba(28,39,66,.18);
+  --rond:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Nunito',system-ui,sans-serif;
+  color:var(--encre);
+  background:var(--laine);
+  min-height:100vh;
+}
+h1,h2,h3,.display{font-family:'Fraunces',Georgia,serif}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible,[tabindex]:focus-visible{
+  outline:3px solid var(--miel);outline-offset:2px;border-radius:6px;
+}
+.hidden{display:none !important}
+
+/* ============ ACCUEIL : nuit étoilée ============ */
+#view-landing{
+  min-height:100vh;
+  background:linear-gradient(180deg,#141d33 0%,#1c2742 45%,#2e3b63 78%,#4a3f55 100%);
+  color:var(--blanc);
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;overflow:hidden;
+  padding:48px 20px 64px;
+}
+.stars{position:absolute;inset:0;pointer-events:none}
+.star{position:absolute;background:#fff;border-radius:50%;opacity:.8;animation:twinkle 3.4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:.95}}
+.landing-inner{position:relative;z-index:2;max-width:820px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.eyebrow{letter-spacing:.28em;text-transform:uppercase;font-size:.72rem;font-weight:800;color:var(--miel-doux);margin-top:8px}
+.landing-inner h1{font-size:clamp(2rem,5.5vw,3.4rem);font-weight:900;line-height:1.08;margin:6px 0 2px}
+.landing-inner .sub{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(1.05rem,2.6vw,1.35rem);color:#dfe4f4;font-weight:500}
+.scene{width:min(430px,86vw);margin:18px 0 6px;filter:drop-shadow(0 14px 34px rgba(0,0,0,.35))}
+
+.gate{
+  background:rgba(255,253,248,.07);
+  border:1.5px solid rgba(246,217,168,.45);
+  border-radius:var(--rond);
+  padding:26px 28px;width:min(400px,100%);
+  margin-top:14px;text-align:left;
+}
+.gate h2{font-size:1.25rem;margin-bottom:14px;text-align:center}
+.gate label{display:block;font-size:.8rem;font-weight:800;letter-spacing:.05em;color:var(--miel-doux);margin:12px 0 6px;text-transform:uppercase}
+.gate select,.gate input{
+  width:100%;padding:12px 14px;border-radius:10px;
+  border:1.5px solid rgba(246,217,168,.4);
+  background:rgba(20,27,48,.55);color:#fff;
+  font-family:inherit;font-size:1rem;
+}
+.gate select option{color:var(--encre);background:var(--blanc)}
+.gate .err{color:#f4a58e;font-size:.85rem;font-weight:700;margin-top:10px;min-height:1.2em}
+.gate .go{width:100%;margin-top:14px}
+.landing-foot{position:relative;z-index:2;margin-top:auto;padding-top:36px;font-size:.78rem;color:#8e97b5}
+
+/* ============ MODALES ============ */
+.overlay{position:fixed;inset:0;background:rgba(20,27,48,.62);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal{background:var(--blanc);border-radius:var(--rond);box-shadow:var(--ombre);padding:28px;width:min(400px,100%);animation:pop .22s ease}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h3{font-size:1.3rem;margin-bottom:6px}
+.modal p{font-size:.9rem;color:#5a6280;margin-bottom:16px;line-height:1.45}
+.modal input[type=password],.modal input[type=text]{
+  width:100%;padding:12px 14px;border:1.5px solid #d8cfbc;border-radius:10px;
+  font-size:1rem;font-family:inherit;background:var(--laine);
+}
+.modal .err{color:var(--brique);font-size:.85rem;font-weight:700;margin-top:8px;min-height:1.2em}
+.modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.btn{border:none;border-radius:10px;padding:11px 18px;font-weight:800;font-size:.92rem;transition:transform .12s ease,filter .12s ease}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+.btn-primary{background:var(--miel);color:#3a2a10}
+.btn-ghost{background:transparent;color:#5a6280}
+.btn-danger{background:var(--brique);color:#fff}
+.btn-sapin{background:var(--sapin);color:#fff}
+
+/* ============ PLANNING ============ */
+#view-planning{min-height:100vh;display:flex;flex-direction:column}
+.topbar{
+  background:var(--nuit);color:var(--blanc);
+  padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:20;box-shadow:0 4px 18px rgba(28,39,66,.25);
+}
+.topbar .brand{font-family:'Fraunces',serif;font-weight:700;font-size:1.05rem;display:flex;align-items:center;gap:10px}
+.topbar .brand svg{width:30px;height:30px}
+.topbar .spacer{flex:1}
+.whoami{background:rgba(246,217,168,.16);color:var(--miel-doux);font-size:.78rem;font-weight:800;padding:5px 12px;border-radius:999px}
+.lockbadge{background:var(--brique);color:#fff;font-size:.76rem;font-weight:800;padding:5px 12px;border-radius:999px;display:inline-flex;align-items:center;gap:6px}
+.syncdot{font-size:.76rem;font-weight:800;padding:5px 12px;border-radius:999px;display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);color:#c2c9df}
+.syncdot::before{content:"";width:9px;height:9px;border-radius:50%;background:#8e97b5}
+.syncdot.on{color:#bfe3cd}.syncdot.on::before{background:#5fbf85;box-shadow:0 0 8px #5fbf85}
+.syncdot.off{color:#f0c2b4}.syncdot.off::before{background:var(--brique)}
+.linkbtn{background:transparent;border:1.5px solid rgba(255,255,255,.35);color:#dfe4f4;border-radius:10px;padding:8px 14px;font-weight:700;font-size:.85rem}
+.linkbtn:hover{border-color:var(--miel);color:var(--miel-doux)}
+
+.tabsbar{
+  background:var(--laine-2);border-bottom:2px solid #e0d5bd;
+  padding:10px 22px 0;display:flex;align-items:flex-end;gap:6px;flex-wrap:wrap;
+  position:sticky;top:58px;z-index:19;
+}
+.yeartab{
+  background:#e6dcc6;border:none;border-radius:12px 12px 0 0;
+  padding:10px 20px;font-family:'Fraunces',serif;font-weight:700;font-size:1.02rem;
+  color:#6b6248;position:relative;transition:background .15s ease;
+}
+.yeartab:hover{background:#efe6d0}
+.yeartab.active{background:var(--laine);color:var(--encre);box-shadow:0 -3px 10px rgba(28,39,66,.08)}
+.ruletab{
+  background:var(--nuit);border:none;border-radius:12px 12px 0 0;
+  padding:10px 18px;font-family:'Fraunces',serif;font-weight:700;font-size:1.02rem;
+  color:var(--miel-doux);transition:filter .15s ease;
+}
+.ruletab:hover{filter:brightness(1.2)}
+.ruletab.active{background:var(--nuit-2);box-shadow:0 -3px 10px rgba(28,39,66,.2);color:#fff}
+.addyear{
+  background:var(--miel);border:none;border-radius:12px 12px 0 0;
+  padding:10px 16px;font-weight:900;font-size:1.15rem;color:#3a2a10;line-height:1;
+}
+.addyear:hover{filter:brightness(1.06)}
+.tabmenu{
+  position:absolute;background:var(--blanc);border-radius:12px;box-shadow:var(--ombre);
+  padding:6px;z-index:40;min-width:170px;animation:pop .16s ease;
+}
+.tabmenu button{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;padding:10px 12px;border-radius:8px;font-size:.92rem;font-weight:700;color:var(--encre);text-align:left}
+.tabmenu button:hover{background:var(--laine)}
+.tabmenu button.danger{color:var(--brique)}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:14px 22px 4px;font-size:.8rem;font-weight:700;color:#5a6280}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:4px;display:inline-block}
+
+.planwrap{overflow-x:auto;padding:14px 22px 40px;flex:1}
+.months{display:flex;gap:16px;align-items:flex-start;width:max-content}
+.month{
+  background:var(--blanc);border-radius:var(--rond);box-shadow:0 4px 16px rgba(28,39,66,.09);
+  overflow:hidden;min-width:392px;
+}
+.month h3{
+  background:var(--nuit);color:var(--miel-doux);text-align:center;
+  padding:11px 8px;font-size:1.06rem;font-weight:700;letter-spacing:.03em;text-transform:capitalize;
+}
+.month table{border-collapse:collapse;width:100%}
+.month th{
+  font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:#8a8368;
+  padding:7px 6px;border-bottom:1.5px solid var(--laine-2);text-align:left;background:#fbf7ee;
+}
+.month td{padding:3px 6px;border-bottom:1px solid #f1ead9;font-size:.84rem;vertical-align:middle}
+.month tr.we td{background:#f6efdf}
+.month tr.today td{background:var(--miel-doux);font-weight:800}
+.month td.dj{color:#7d7660;width:44px;text-transform:capitalize}
+.month td.dd{font-weight:800;width:30px;text-align:center}
+.month td.stamp{width:112px;font-size:.72rem;font-weight:700;color:#8a7a55;white-space:nowrap}
+.psel{
+  width:100%;border:1.5px solid transparent;border-radius:8px;padding:6px 6px;
+  font-family:inherit;font-size:.8rem;font-weight:700;background:var(--laine);
+  color:var(--encre);appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M1 1l4 4 4-4' stroke='%235a6280' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat:no-repeat;background-position:right 8px center;padding-right:22px;
+  transition:background-color .15s ease;
+}
+.psel:disabled{opacity:.65;cursor:not-allowed}
+.psel.v-dispo{background-color:#e4efe7;color:#2e5a41;border-color:#bcd7c6}
+.psel.v-present{background-color:#e2ecf6;color:#2c5580;border-color:#bcd3ea}
+.psel.v-seulm{background-color:#faecd4;color:#8a5a12;border-color:#ecd3a3}
+.psel.v-seuln{background-color:#f6ded6;color:#8f3a24;border-color:#e5bcae}
+
+.emptyyears{padding:80px 24px;text-align:center;color:#7d7660}
+.emptyyears .display{font-size:1.5rem;margin-bottom:8px;color:var(--encre)}
+
+.lockbanner{
+  background:var(--brique);color:#fff;text-align:center;font-weight:800;
+  font-size:.88rem;padding:9px 16px;
+}
+
+/* ============ RÈGLEMENT ============ */
+.charte{
+  max-width:720px;margin:26px auto;background:var(--blanc);
+  border-radius:var(--rond);box-shadow:var(--ombre);overflow:hidden;
+}
+.charte .head{
+  background:linear-gradient(180deg,#141d33,#28365c);color:var(--blanc);
+  text-align:center;padding:30px 24px 26px;position:relative;
+}
+.charte .head .badge{font-size:2rem}
+.charte .head h2{font-size:1.5rem;margin:8px 0 4px;color:var(--miel-doux)}
+.charte .head p{color:#c2c9df;font-style:italic;font-family:'Fraunces',serif}
+.charte ol{list-style:none;padding:26px 30px 30px;counter-reset:art}
+.charte li{
+  counter-increment:art;position:relative;
+  padding:14px 14px 14px 92px;margin-bottom:12px;
+  background:var(--laine);border-radius:12px;
+  font-size:.98rem;line-height:1.5;font-weight:600;
+}
+.charte li::before{
+  content:"Art. " counter(art);
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  font-family:'Fraunces',serif;font-weight:900;color:var(--miel);
+  font-size:1.02rem;
+}
+.charte .empty{padding:36px;text-align:center;color:#7d7660;font-style:italic}
+.charte .foot{padding:0 30px 26px;text-align:center;font-size:.78rem;color:#9a9178;font-style:italic}
+
+/* ============ ADMIN ============ */
+#view-admin{min-height:100vh;background:var(--nuit);color:var(--blanc);padding-bottom:60px}
+.admin-inner{max-width:680px;margin:0 auto;padding:34px 20px}
+.admin-inner h1{font-size:1.9rem;margin:8px 0 4px}
+.admin-inner .sub{color:#aeb6d2;margin-bottom:28px}
+.panel{background:rgba(255,253,248,.07);border:1.5px solid rgba(246,217,168,.28);border-radius:var(--rond);padding:24px;margin-bottom:20px}
+.panel h2{font-size:1.15rem;color:var(--miel-doux);margin-bottom:6px}
+.panel .desc{font-size:.87rem;color:#c2c9df;margin-bottom:16px;line-height:1.5}
+.pwrow{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.pwrow label{flex-basis:100%;font-size:.82rem;font-weight:800;letter-spacing:.04em;color:#dfe4f4}
+.pwrow input{flex:1;min-width:180px;padding:11px 13px;border-radius:10px;border:1.5px solid rgba(246,217,168,.35);background:rgba(20,27,48,.5);color:#fff;font-family:inherit;font-size:.95rem}
+.rulelist{list-style:none;margin-bottom:16px}
+.rulelist li{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(20,27,48,.45);border:1.5px solid rgba(246,217,168,.2);
+  border-radius:10px;padding:11px 14px;margin-bottom:8px;font-size:.92rem;line-height:1.4;
+}
+.rulelist li span{flex:1}
+.rulelist .delrule{background:none;border:none;font-size:1.05rem;color:#f4a58e;padding:4px}
+.rulelist .delrule:hover{transform:scale(1.15)}
+.addrule{display:flex;gap:10px;flex-wrap:wrap}
+.addrule input{flex:1;min-width:200px;padding:11px 13px;border-radius:10px;border:1.5px solid rgba(246,217,168,.35);background:rgba(20,27,48,.5);color:#fff;font-family:inherit;font-size:.92rem}
+
+.toast{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  background:var(--sapin);color:#fff;padding:12px 22px;border-radius:12px;
+  font-weight:800;box-shadow:var(--ombre);z-index:60;animation:pop .2s ease;
+}
+.toast.warn{background:var(--brique)}
+
+@media (max-width:640px){
+  .tabsbar{top:98px}
+  .topbar{padding:12px 14px}
+  .planwrap,.legend,.tabsbar{padding-left:14px;padding-right:14px}
+  .charte li{padding-left:78px}
+  .charte li::before{left:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= ACCUEIL ================= -->
+<div id="view-landing">
+  <div class="stars" id="stars"></div>
+  <div class="landing-inner">
+    <div class="eyebrow">Bienvenue au refuge</div>
+    <h1>Le Poêt de Celard</h1>
+    <div class="sub">le refuge sacré des Pingouins de l'espace</div>
+
+    <svg class="scene" viewBox="0 0 430 250" aria-hidden="true">
+      <circle cx="368" cy="42" r="24" fill="#f6d9a8" opacity=".95"/>
+      <circle cx="360" cy="36" r="5" fill="#e8c288" opacity=".6"/>
+      <circle cx="376" cy="50" r="3.4" fill="#e8c288" opacity=".6"/>
+      <path d="M0 205 Q120 168 240 196 T430 190 L430 250 L0 250 Z" fill="#25304f"/>
+      <path d="M0 218 Q150 190 300 214 T430 210 L430 250 L0 250 Z" fill="#1a2340"/>
+      <g>
+        <rect x="150" y="128" width="130" height="78" rx="4" fill="#3a3128"/>
+        <path d="M138 132 L215 78 L292 132 Z" fill="#57493a"/>
+        <rect x="243" y="90" width="14" height="30" fill="#463b2f"/>
+        <path d="M243 88 q7 -6 14 0 l0 4 -14 0 Z" fill="#57493a"/>
+        <circle cx="252" cy="76" r="5" fill="#cfd6e8" opacity=".35"><animate attributeName="cy" values="76;60;46" dur="5s" repeatCount="indefinite"/><animate attributeName="opacity" values=".35;.2;0" dur="5s" repeatCount="indefinite"/></circle>
+        <circle cx="257" cy="70" r="7" fill="#cfd6e8" opacity=".25"><animate attributeName="cy" values="70;50;34" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" values=".25;.14;0" dur="6s" repeatCount="indefinite"/></circle>
+        <rect x="163" y="142" width="26" height="24" rx="3" fill="#f2b94f">
+          <animate attributeName="fill" values="#f2b94f;#e8a33d;#f2b94f" dur="3.6s" repeatCount="indefinite"/>
+        </rect>
+        <rect x="241" y="142" width="26" height="24" rx="3" fill="#f2b94f">
+          <animate attributeName="fill" values="#e8a33d;#f6cf7a;#e8a33d" dur="4.4s" repeatCount="indefinite"/>
+        </rect>
+        <rect x="200" y="150" width="30" height="56" rx="3" fill="#2a2118"/>
+        <circle cx="224" cy="180" r="2.6" fill="#e8a33d"/>
+        <ellipse cx="176" cy="212" rx="34" ry="8" fill="#e8a33d" opacity=".14"/>
+        <ellipse cx="254" cy="212" rx="34" ry="8" fill="#e8a33d" opacity=".14"/>
+      </g>
+      <g fill="#31543f">
+        <path d="M60 206 L78 160 L96 206 Z"/><path d="M64 188 L78 152 L92 188 Z" fill="#3c664c"/>
+        <rect x="74" y="206" width="8" height="10" fill="#463b2f"/>
+        <path d="M330 210 L344 174 L358 210 Z"/><path d="M333 196 L344 168 L355 196 Z" fill="#3c664c"/>
+        <rect x="341" y="210" width="6" height="9" fill="#463b2f"/>
+      </g>
+      <g transform="translate(96,158)">
+        <ellipse cx="22" cy="60" rx="20" ry="6" fill="#10182c" opacity=".5"/>
+        <ellipse cx="22" cy="38" rx="19" ry="24" fill="#232b3f"/>
+        <ellipse cx="22" cy="42" rx="12" ry="17" fill="#fffdf8"/>
+        <ellipse cx="4" cy="38" rx="5" ry="12" fill="#232b3f" transform="rotate(14 4 38)"/>
+        <ellipse cx="40" cy="38" rx="5" ry="12" fill="#232b3f" transform="rotate(-14 40 38)"/>
+        <path d="M14 60 l6 4 -8 2 Z" fill="#e8a33d"/><path d="M30 60 l-6 4 8 2 Z" fill="#e8a33d"/>
+        <circle cx="22" cy="16" r="13" fill="#232b3f"/>
+        <circle cx="18" cy="14" r="2.4" fill="#fff"/>
+        <circle cx="27" cy="14" r="2.4" fill="#fff"/>
+        <circle cx="18.6" cy="14.4" r="1.1" fill="#10182c"/>
+        <circle cx="27.6" cy="14.4" r="1.1" fill="#10182c"/>
+        <path d="M20 19 l2.6 3 2.6 -3 Z" fill="#e8a33d"/>
+        <circle cx="22" cy="15" r="17" fill="#9fd2ff" opacity=".22" stroke="#cfe6ff" stroke-width="1.6"/>
+        <path d="M8 22 a17 17 0 0 1 0 -14" stroke="#fff" stroke-width="1.4" fill="none" opacity=".7"/>
+        <line x1="22" y1="-2" x2="22" y2="-9" stroke="#cfe6ff" stroke-width="1.4"/>
+        <circle cx="22" cy="-11" r="2.4" fill="#e8a33d">
+          <animate attributeName="opacity" values="1;.3;1" dur="1.8s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+      <line x1="40" y1="30" x2="86" y2="46" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0">
+        <animate attributeName="opacity" values="0;.9;0" dur="7s" begin="2s" repeatCount="indefinite"/>
+      </line>
+    </svg>
+
+    <div class="gate">
+      <h2>Qui êtes-vous&nbsp;?</h2>
+      <label for="whoSelect">Identité</label>
+      <select id="whoSelect">
+        <option value="piccolo">🐧 Grand Pingouin Piccolo</option>
+        <option value="aldon">🐧 Grand Pingouin ALDON</option>
+        <option value="petits">🐣 Petit Pingouin</option>
+        <option value="admin">🛡️ Administrateur</option>
+      </select>
+      <label for="gatePw">Mot de passe</label>
+      <input type="password" id="gatePw" placeholder="Votre mot de passe" onkeydown="if(event.key==='Enter')enterRefuge()">
+      <div class="err" id="gateErr"></div>
+      <button class="btn btn-primary go" onclick="enterRefuge()">Entrer au refuge</button>
+    </div>
+  </div>
+  <div class="landing-foot">Le Poët-Célard · Drôme provençale · Colonie fondée quelque part entre la Terre et la Lune</div>
+</div>
+
+<!-- ================= PLANNING ================= -->
+<div id="view-planning" class="hidden">
+  <div class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 44 44"><circle cx="22" cy="16" r="10" fill="#f6d9a8"/><ellipse cx="22" cy="32" rx="13" ry="12" fill="#f7f1e6"/><circle cx="18.5" cy="14.5" r="1.7" fill="#1c2742"/><circle cx="25.5" cy="14.5" r="1.7" fill="#1c2742"/><path d="M20 18 l2 2.4 2 -2.4 Z" fill="#e8a33d"/></svg>
+      Le Poêt de Celard
+    </div>
+    <span id="whoami" class="whoami"></span>
+    <span id="syncDot" class="syncdot">Connexion…</span>
+    <span id="lockBadgeTop" class="lockbadge hidden">🔒 Site verrouillé</span>
+    <div class="spacer"></div>
+    <button id="adminShortcut" class="linkbtn hidden" onclick="openAdmin()">🛡️ Admin</button>
+    <button class="linkbtn" onclick="goHome()">← Accueil</button>
+  </div>
+
+  <div id="lockBanner" class="lockbanner hidden">🔒 Le refuge est verrouillé par l'administrateur — consultation seule pour le moment.</div>
+
+  <div class="tabsbar" id="tabsbar"></div>
+
+  <div class="legend" id="legend">
+    <span><span class="dot" style="background:#4a7a5e"></span> Disponible</span>
+    <span><span class="dot" style="background:#4d7fb5"></span> Présent</span>
+    <span><span class="dot" style="background:#d98e2b"></span> Souhait d'être seul — modifiable</span>
+    <span><span class="dot" style="background:#c4573b"></span> Souhait d'être seul — non négociable</span>
+  </div>
+
+  <div class="planwrap" id="planwrap"></div>
+</div>
+
+<!-- ================= ADMIN ================= -->
+<div id="view-admin" class="hidden">
+  <div class="topbar" style="background:transparent;box-shadow:none;position:static">
+    <div class="brand">🛡️ Poste de commandement</div>
+    <div class="spacer"></div>
+    <button class="linkbtn" onclick="openPlanning()">Voir le planning</button>
+    <button class="linkbtn" onclick="goHome()">← Accueil</button>
+  </div>
+  <div class="admin-inner">
+    <h1>Administration du refuge</h1>
+    <div class="sub">Ici, on veille sur la colonie.</div>
+
+    <div class="panel">
+      <h2>Verrouillage du site</h2>
+      <p class="desc">Quand le refuge est verrouillé, les Pingouins peuvent consulter le planning mais ne peuvent plus le modifier. Le verrouillage s'applique instantanément sur tous les écrans connectés.</p>
+      <button id="lockToggle" class="btn btn-sapin" onclick="toggleLock()">…</button>
+    </div>
+
+    <div class="panel">
+      <h2>Règlement intergalactique</h2>
+      <p class="desc">Les articles s'affichent dans l'onglet RÈGLES du planning, dans l'ordre ci-dessous.</p>
+      <ul class="rulelist" id="ruleList"></ul>
+      <div class="addrule">
+        <input type="text" id="newRule" placeholder="Nouvel article du règlement…" onkeydown="if(event.key==='Enter')addRule()">
+        <button class="btn btn-primary" onclick="addRule()">Ajouter</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Mots de passe</h2>
+      <p class="desc">Cinq clés protègent le refuge. Modifiez-les puis enregistrez : elles sont partagées avec tous les appareils.</p>
+      <div class="pwrow">
+        <label for="pwPiccolo">🐧 Grand Pingouin Piccolo</label>
+        <input type="text" id="pwPiccolo" autocomplete="off">
+      </div>
+      <div class="pwrow">
+        <label for="pwAldon">🐧 Grand Pingouin ALDON</label>
+        <input type="text" id="pwAldon" autocomplete="off">
+      </div>
+      <div class="pwrow">
+        <label for="pwPetits">🐣 Petit Pingouin</label>
+        <input type="text" id="pwPetits" autocomplete="off">
+      </div>
+      <div class="pwrow">
+        <label for="pwAdmin">🛡️ Administrateur</label>
+        <input type="text" id="pwAdmin" autocomplete="off">
+      </div>
+      <div class="pwrow">
+        <label for="pwDelete">🗑️ Suppression d'un planning</label>
+        <input type="text" id="pwDelete" autocomplete="off">
+      </div>
+      <button class="btn btn-primary" onclick="savePasswords()">Enregistrer les mots de passe</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODALES ================= -->
+<div id="delOverlay" class="overlay hidden" onclick="if(event.target===this)closeModal('delOverlay')">
+  <div class="modal">
+    <h3>Supprimer l'année <span id="delYear"></span> ?</h3>
+    <p>Toutes les présences saisies pour cette année seront effacées, pour tout le monde. Êtes-vous sûr ? Cette action demande le mot de passe de suppression.</p>
+    <input type="password" id="delInput" placeholder="Mot de passe de suppression" onkeydown="if(event.key==='Enter')confirmDelete()">
+    <div class="err" id="delErr"></div>
+    <div class="row">
+      <button class="btn btn-ghost" onclick="closeModal('delOverlay')">Annuler</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURATION SUPABASE — à remplir avant mise en ligne
+   ============================================================ */
+const SUPABASE_URL = "https://kehvxapkbrkzaavrvdpt.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_ACMnhG_N7a2P99IsjS523w_J7tMyHJx";
+
+const CLIENT_ID = (crypto.randomUUID ? crypto.randomUUID() : "c-"+Math.random().toString(36).slice(2)+Date.now());
+const REMOTE = SUPABASE_URL.indexOf("VOTRE-PROJET") === -1 && SUPABASE_ANON_KEY !== "VOTRE_CLE_ANON";
+const sb = REMOTE ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+/* ================= IDENTITÉS ================= */
+const USERS = {
+  piccolo: { label: "Grand Pingouin Piccolo", stamp: "Piccolo", pwKey: "piccolo" },
+  aldon:   { label: "Grand Pingouin ALDON",   stamp: "Aldon",   pwKey: "aldon" },
+  petits:  { label: "Petit Pingouin",          stamp: "Pingouin", pwKey: "petits" },
+  admin:   { label: "Administrateur",          stamp: "admin",    pwKey: "admin" }
+};
+
+/* ================= ÉTAT ================= */
+const DEFAULTS = {
+  passwords: { piccolo: "Juju", aldon: "Ella", petits: "Singe", admin: "#Caramel2020*", delete: "#Caramel2020*" },
+  locked: false,
+  years: { "2026": {} },   // years[y][key] = { v, by, at }  (at = "2026-07-20")
+  regles: [
+    { id: 1, texte: "Les réservations « non négociables » ne peuvent pas excéder deux semaines." },
+    { id: 2, texte: "Les réservations « non négociables » doivent être réalisées au moins 2 mois à l'avance." }
+  ],
+  activeTab: "2026"        // une année ("2026") ou "regles"
+};
+let state = structuredClone(DEFAULTS);
+let currentUser = null;    // clé de USERS
+let pendingDeleteYear = null;
+let openMenuEl = null;
+let ready = false;
+
+function isAdmin(){ return currentUser === "admin"; }
+
+/* ================= SUPABASE : chargement initial ================= */
+async function loadRemote(){
+  if(!REMOTE){
+    ready = true;
+    setSync("off", "Mode local");
+    toast("Supabase non configuré : mode local (rien n'est partagé)", true);
+    return;
+  }
+  try{
+    const [cfg, yrs, pres, reg] = await Promise.all([
+      sb.from("poet_config").select("*"),
+      sb.from("poet_years").select("*"),
+      sb.from("poet_presences").select("*"),
+      sb.from("poet_regles").select("*").order("id", { ascending: true })
+    ]);
+    if(cfg.error || yrs.error || pres.error || reg.error) throw (cfg.error || yrs.error || pres.error || reg.error);
+
+    // Premier lancement : on sème les valeurs par défaut
+    if(cfg.data.length === 0){
+      await sb.from("poet_config").upsert([
+        { key: "pw_piccolo", value: DEFAULTS.passwords.piccolo, client_id: CLIENT_ID },
+        { key: "pw_aldon",   value: DEFAULTS.passwords.aldon,   client_id: CLIENT_ID },
+        { key: "pw_petits",  value: DEFAULTS.passwords.petits,  client_id: CLIENT_ID },
+        { key: "pw_admin",   value: DEFAULTS.passwords.admin,   client_id: CLIENT_ID },
+        { key: "pw_delete",  value: DEFAULTS.passwords.delete,  client_id: CLIENT_ID },
+        { key: "locked",     value: "0",                         client_id: CLIENT_ID }
+      ]);
+    } else {
+      applyConfigRows(cfg.data);
+    }
+    if(yrs.data.length === 0){
+      await sb.from("poet_years").insert({ year: 2026, client_id: CLIENT_ID });
+      state.years = { "2026": {} };
+    } else {
+      state.years = {};
+      yrs.data.forEach(r => state.years[String(r.year)] = {});
+    }
+    pres.data.forEach(r => {
+      const y = String(r.year);
+      if(!state.years[y]) state.years[y] = {};
+      state.years[y][r.jour_key] = { v: r.valeur, by: r.auteur || "", at: r.demande || "" };
+    });
+    if(reg.data.length === 0){
+      const { data } = await sb.from("poet_regles")
+        .insert(DEFAULTS.regles.map(r => ({ texte: r.texte, client_id: CLIENT_ID })))
+        .select();
+      if(data) state.regles = data.map(r => ({ id: r.id, texte: r.texte }));
+    } else {
+      state.regles = reg.data.map(r => ({ id: r.id, texte: r.texte }));
+    }
+    const list = Object.keys(state.years).sort();
+    if(state.activeTab !== "regles" && !state.years[state.activeTab]) state.activeTab = list[0] || "regles";
+
+    subscribeRealtime();
+    ready = true;
+    refreshIfVisible();
+  }catch(e){
+    console.error("Supabase :", e);
+    setSync("off", "Hors ligne");
+    toast("Connexion Supabase impossible — vérifie l'URL, la clé et les tables", true);
+    ready = true;
+  }
+}
+
+function applyConfigRows(rows){
+  rows.forEach(r => {
+    if(r.key === "pw_piccolo") state.passwords.piccolo = r.value;
+    if(r.key === "pw_aldon")   state.passwords.aldon = r.value;
+    if(r.key === "pw_petits")  state.passwords.petits = r.value;
+    if(r.key === "pw_admin")   state.passwords.admin = r.value;
+    if(r.key === "pw_delete")  state.passwords.delete = r.value;
+    if(r.key === "locked")     state.locked = r.value === "1";
+  });
+}
+
+/* ================= SUPABASE : temps réel ================= */
+function subscribeRealtime(){
+  sb.channel("poet-celard")
+    .on("postgres_changes", { event: "*", schema: "public", table: "poet_presences" }, onRemotePresence)
+    .on("postgres_changes", { event: "*", schema: "public", table: "poet_years" }, onRemoteYear)
+    .on("postgres_changes", { event: "*", schema: "public", table: "poet_config" }, onRemoteConfig)
+    .on("postgres_changes", { event: "*", schema: "public", table: "poet_regles" }, onRemoteRegle)
+    .subscribe(status => {
+      if(status === "SUBSCRIBED") setSync("on", "En ligne");
+      else if(status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") setSync("off", "Hors ligne");
+    });
+}
+
+function onRemotePresence(payload){
+  const row = payload.new && payload.new.year !== undefined ? payload.new : payload.old;
+  if(!row) return;
+  if(row.client_id === CLIENT_ID) return;                 // anti-écho
+  const y = String(row.year), key = row.jour_key;
+  if(!state.years[y]) return;
+
+  if(payload.eventType === "DELETE"){
+    delete state.years[y][key];
+    patchCell(y, key, "", "", "");
+  } else {
+    state.years[y][key] = { v: row.valeur, by: row.auteur || "", at: row.demande || "" };
+    patchCell(y, key, row.valeur, row.auteur || "", row.demande || "");
+  }
+}
+
+function onRemoteYear(payload){
+  const row = payload.new && payload.new.year !== undefined ? payload.new : payload.old;
+  if(!row || row.client_id === CLIENT_ID) return;
+  const y = String(row.year);
+  if(payload.eventType === "DELETE"){
+    delete state.years[y];
+    if(state.activeTab === y){
+      const rest = Object.keys(state.years).sort();
+      state.activeTab = rest[0] || "regles";
+      toast("L'année " + y + " a été supprimée par un autre Pingouin", true);
+    }
+  } else {
+    if(!state.years[y]) state.years[y] = {};
+  }
+  refreshIfVisible();
+}
+
+function onRemoteConfig(payload){
+  const row = payload.new;
+  if(!row || row.client_id === CLIENT_ID) return;
+  applyConfigRows([row]);
+  renderLockUI();
+  if(row.key === "locked") setSelectsEnabled(isAdmin() || !state.locked);
+  if(!document.getElementById("view-admin").classList.contains("hidden")){
+    fillAdminInputs(); refreshLockToggle();
+  }
+}
+
+function onRemoteRegle(payload){
+  if(payload.eventType === "DELETE"){
+    const old = payload.old || {};
+    if(old.client_id === CLIENT_ID) return;
+    state.regles = state.regles.filter(r => r.id !== old.id);
+  } else {
+    const row = payload.new;
+    if(!row || row.client_id === CLIENT_ID) return;
+    if(!state.regles.some(r => r.id === row.id)){
+      state.regles.push({ id: row.id, texte: row.texte });
+      state.regles.sort((a,b) => a.id - b.id);
+    }
+  }
+  if(state.activeTab === "regles") refreshIfVisible();
+  if(!document.getElementById("view-admin").classList.contains("hidden")) renderRuleList();
+}
+
+/* Mise à jour douce d'une cellule : on ne touche jamais au menu
+   que l'utilisateur est en train de manipuler. */
+function patchCell(y, key, val, by, at){
+  if(state.activeTab !== y) return;
+  const sel = document.querySelector('.psel[data-key="' + y + "|" + key + '"]');
+  if(!sel || sel === document.activeElement) return;
+  sel.value = val;
+  sel.className = "psel" + (CLS[val] ? " " + CLS[val] : "");
+  const st = document.querySelector('.stamp[data-key="' + y + "|" + key + '"]');
+  if(st) st.textContent = fmtStamp(by, at);
+}
+function setSelectsEnabled(on){
+  document.querySelectorAll(".psel").forEach(s => s.disabled = !on);
+}
+function refreshIfVisible(){
+  if(!document.getElementById("view-planning").classList.contains("hidden")){
+    renderTabs(); renderLockUI(); renderMain();
+  }
+}
+function setSync(mode, label){
+  const d = document.getElementById("syncDot");
+  d.className = "syncdot " + mode;
+  d.textContent = label;
+}
+
+/* ================= SUPABASE : écritures ================= */
+async function pushPresence(y, key, val, by, at){
+  if(!REMOTE) return;
+  try{
+    if(val){
+      const { error } = await sb.from("poet_presences").upsert(
+        { year: parseInt(y,10), jour_key: key, valeur: val, auteur: by, demande: at, client_id: CLIENT_ID },
+        { onConflict: "year,jour_key" }
+      );
+      if(error) throw error;
+    } else {
+      const { error } = await sb.from("poet_presences").delete()
+        .eq("year", parseInt(y,10)).eq("jour_key", key);
+      if(error) throw error;
+    }
+  }catch(e){ console.error(e); toast("Échec de l'enregistrement — vérifie la connexion", true); }
+}
+async function pushYearCreate(y){
+  if(!REMOTE) return;
+  const { error } = await sb.from("poet_years").insert({ year: parseInt(y,10), client_id: CLIENT_ID });
+  if(error){ console.error(error); toast("Échec de la création de l'année", true); }
+}
+async function pushYearDelete(y){
+  if(!REMOTE) return;
+  await sb.from("poet_presences").delete().eq("year", parseInt(y,10));
+  const { error } = await sb.from("poet_years").delete().eq("year", parseInt(y,10));
+  if(error){ console.error(error); toast("Échec de la suppression", true); }
+}
+async function pushConfig(key, value){
+  if(!REMOTE) return;
+  const { error } = await sb.from("poet_config").upsert({ key: key, value: value, client_id: CLIENT_ID });
+  if(error){ console.error(error); toast("Échec de l'enregistrement", true); }
+}
+async function pushRegleAdd(texte){
+  if(!REMOTE){
+    const id = Date.now();
+    state.regles.push({ id: id, texte: texte });
+    return;
+  }
+  const { data, error } = await sb.from("poet_regles").insert({ texte: texte, client_id: CLIENT_ID }).select();
+  if(error){ console.error(error); toast("Échec de l'ajout de la règle", true); return; }
+  if(data && data[0]) state.regles.push({ id: data[0].id, texte: data[0].texte });
+}
+async function pushRegleDelete(id){
+  if(!REMOTE) return;
+  const { error } = await sb.from("poet_regles").delete().eq("id", id);
+  if(error){ console.error(error); toast("Échec de la suppression de la règle", true); }
+}
+
+/* ================= ACCUEIL ================= */
+(function makeStars(){
+  const c = document.getElementById("stars");
+  for(let i=0;i<90;i++){
+    const s = document.createElement("div");
+    s.className = "star";
+    const size = Math.random()*2.2+0.8;
+    s.style.width = s.style.height = size+"px";
+    s.style.left = Math.random()*100+"%";
+    s.style.top = Math.random()*70+"%";
+    s.style.animationDelay = (Math.random()*4)+"s";
+    s.style.animationDuration = (2.5+Math.random()*3)+"s";
+    c.appendChild(s);
+  }
+})();
+loadRemote();
+
+function enterRefuge(){
+  const who = document.getElementById("whoSelect").value;
+  const pw = document.getElementById("gatePw").value;
+  const err = document.getElementById("gateErr");
+  if(pw !== state.passwords[USERS[who].pwKey]){
+    err.textContent = "Mot de passe incorrect. Le refuge reste fermé.";
+    return;
+  }
+  err.textContent = "";
+  document.getElementById("gatePw").value = "";
+  currentUser = who;
+  if(isAdmin()) openAdmin();
+  else openPlanning();
+}
+
+/* ================= NAVIGATION ================= */
+function show(id){
+  ["view-landing","view-planning","view-admin"].forEach(v=>document.getElementById(v).classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+function goHome(){ currentUser = null; show("view-landing"); }
+function closeModal(id){ document.getElementById(id).classList.add("hidden"); }
+
+/* ================= PLANNING ================= */
+const MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+const JOURS = ["dim.","lun.","mar.","mer.","jeu.","ven.","sam."];
+const OPTIONS = [
+  {v:"",       label:"—"},
+  {v:"dispo",  label:"Disponible"},
+  {v:"present",label:"Présent"},
+  {v:"seulm",  label:"Souhait d'être seul (modifiable)"},
+  {v:"seuln",  label:"Souhait d'être seul (non négociable)"}
+];
+const CLS = {dispo:"v-dispo",present:"v-present",seulm:"v-seulm",seuln:"v-seuln"};
+
+function todayISO(){
+  const n = new Date();
+  return n.getFullYear() + "-" + String(n.getMonth()+1).padStart(2,"0") + "-" + String(n.getDate()).padStart(2,"0");
+}
+function fmtStamp(by, at){
+  if(!by || !at) return "";
+  const p = at.split("-");
+  if(p.length !== 3) return by + " " + at;
+  return by + " " + p[2] + "/" + p[1] + "/" + p[0];
+}
+
+function openPlanning(){
+  show("view-planning");
+  document.getElementById("whoami").textContent = currentUser ? USERS[currentUser].label : "";
+  document.getElementById("adminShortcut").classList.toggle("hidden", !isAdmin());
+  const years = Object.keys(state.years);
+  if(state.activeTab !== "regles" && years.length && !state.years[state.activeTab]) state.activeTab = years.sort()[0];
+  renderTabs(); renderLockUI(); renderMain();
+}
+
+function renderLockUI(){
+  document.getElementById("lockBadgeTop").classList.toggle("hidden", !state.locked);
+  document.getElementById("lockBanner").classList.toggle("hidden", !(state.locked && !isAdmin()));
+}
+
+function renderTabs(){
+  const bar = document.getElementById("tabsbar");
+  bar.innerHTML = "";
+  Object.keys(state.years).sort().forEach(y=>{
+    const b = document.createElement("button");
+    b.className = "yeartab" + (y===state.activeTab ? " active":"");
+    b.textContent = y;
+    b.onclick = (e)=>{ e.stopPropagation(); openTabMenu(b, y); };
+    bar.appendChild(b);
+  });
+  const rules = document.createElement("button");
+  rules.className = "ruletab" + (state.activeTab==="regles" ? " active":"");
+  rules.textContent = "📜 RÈGLES";
+  rules.onclick = ()=>{ state.activeTab = "regles"; renderTabs(); renderMain(); };
+  bar.appendChild(rules);
+  const add = document.createElement("button");
+  add.className = "addyear";
+  add.title = "Ajouter une année";
+  add.textContent = "+";
+  add.onclick = (e)=>{ e.stopPropagation(); openAddMenu(add); };
+  bar.appendChild(add);
+}
+
+function closeMenus(){ if(openMenuEl){ openMenuEl.remove(); openMenuEl = null; } }
+document.addEventListener("click", closeMenus);
+
+function menuAt(anchor){
+  closeMenus();
+  const m = document.createElement("div");
+  m.className = "tabmenu";
+  const r = anchor.getBoundingClientRect();
+  m.style.position = "fixed";
+  m.style.left = Math.min(r.left, window.innerWidth-190)+"px";
+  m.style.top = (r.bottom+4)+"px";
+  m.onclick = (e)=>e.stopPropagation();
+  document.body.appendChild(m);
+  openMenuEl = m;
+  return m;
+}
+
+function openTabMenu(anchor, year){
+  const m = menuAt(anchor);
+  const consult = document.createElement("button");
+  consult.innerHTML = "👀&nbsp; Consulter";
+  consult.onclick = ()=>{ closeMenus(); state.activeTab = year; renderTabs(); renderMain(); };
+  const del = document.createElement("button");
+  del.className = "danger";
+  del.innerHTML = "🗑️&nbsp; Supprimer";
+  del.onclick = ()=>{ closeMenus(); askDelete(year); };
+  m.appendChild(consult); m.appendChild(del);
+}
+
+function openAddMenu(anchor){
+  const m = menuAt(anchor);
+  m.style.maxHeight = "300px"; m.style.overflowY = "auto";
+  let any = false;
+  for(let y=2026; y<=2050; y++){
+    if(state.years[String(y)]) continue;
+    any = true;
+    const b = document.createElement("button");
+    b.textContent = "Créer "+y;
+    b.onclick = ()=>{
+      closeMenus();
+      state.years[String(y)] = {};
+      state.activeTab = String(y);
+      renderTabs(); renderMain();
+      pushYearCreate(y);
+      toast("L'année "+y+" a rejoint la banquise 🐧");
+    };
+    m.appendChild(b);
+  }
+  if(!any){
+    const p = document.createElement("button");
+    p.textContent = "Toutes les années jusqu'à 2050 existent déjà";
+    p.disabled = true;
+    m.appendChild(p);
+  }
+}
+
+function askDelete(year){
+  pendingDeleteYear = year;
+  document.getElementById("delYear").textContent = year;
+  document.getElementById("delInput").value = "";
+  document.getElementById("delErr").textContent = "";
+  document.getElementById("delOverlay").classList.remove("hidden");
+  setTimeout(()=>document.getElementById("delInput").focus(),60);
+}
+function confirmDelete(){
+  const v = document.getElementById("delInput").value;
+  if(v !== state.passwords.delete){
+    document.getElementById("delErr").textContent = "Mot de passe incorrect. Le planning est sauf.";
+    return;
+  }
+  const y = pendingDeleteYear;
+  delete state.years[y];
+  const remaining = Object.keys(state.years).sort();
+  if(state.activeTab === y) state.activeTab = remaining[0] || "regles";
+  closeModal("delOverlay");
+  renderTabs(); renderMain();
+  pushYearDelete(y);
+  toast("Année "+y+" supprimée", true);
+  pendingDeleteYear = null;
+}
+
+function renderMain(){
+  document.getElementById("legend").classList.toggle("hidden", state.activeTab === "regles");
+  if(state.activeTab === "regles") renderRegles();
+  else renderPlanning();
+}
+
+function renderRegles(){
+  const wrap = document.getElementById("planwrap");
+  let lis = "";
+  state.regles.forEach(r => { lis += "<li>" + escapeHtml(r.texte) + "</li>"; });
+  wrap.innerHTML =
+    '<div class="charte">' +
+      '<div class="head">' +
+        '<div class="badge">🐧📜🚀</div>' +
+        '<h2>Règlement intergalactique des Pingouins</h2>' +
+        '<p>Ratifié au sommet de la banquise, sous la pleine lune du Poët-Célard</p>' +
+      '</div>' +
+      (state.regles.length ? '<ol>' + lis + '</ol>' : '<div class="empty">Aucune règle pour le moment. La banquise vit en anarchie joyeuse.</div>') +
+      '<div class="foot">Toute infraction sera jugée par le Grand Conseil des Pingouins de l\'espace.</div>' +
+    '</div>';
+}
+function escapeHtml(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function renderPlanning(){
+  const wrap = document.getElementById("planwrap");
+  wrap.innerHTML = "";
+  const y = state.activeTab;
+  if(!ready){
+    wrap.innerHTML = '<div class="emptyyears"><div class="display">Chargement de la banquise…</div><p>Connexion au refuge en cours.</p></div>';
+    return;
+  }
+  if(!y || y==="regles" || !state.years[y]){
+    wrap.innerHTML = '<div class="emptyyears"><div class="display">La banquise est vide…</div><p>Cliquez sur le bouton <strong>+</strong> ci-dessus pour créer une année.</p></div>';
+    return;
+  }
+  const yearNum = parseInt(y,10);
+  const now = new Date();
+  const editable = isAdmin() || !state.locked;
+
+  const monthsEl = document.createElement("div");
+  monthsEl.className = "months";
+
+  for(let m=0; m<12; m++){
+    const box = document.createElement("div");
+    box.className = "month";
+    const h = document.createElement("h3");
+    h.textContent = MOIS[m]+" "+y;
+    box.appendChild(h);
+
+    const table = document.createElement("table");
+    table.innerHTML = "<thead><tr><th>Jour</th><th>Date</th><th>Présence</th><th>Demande</th></tr></thead>";
+    const tbody = document.createElement("tbody");
+    const nbDays = new Date(yearNum, m+1, 0).getDate();
+
+    for(let d=1; d<=nbDays; d++){
+      const date = new Date(yearNum, m, d);
+      const dow = date.getDay();
+      const tr = document.createElement("tr");
+      if(dow===0 || dow===6) tr.classList.add("we");
+      if(yearNum===now.getFullYear() && m===now.getMonth() && d===now.getDate()) tr.classList.add("today");
+
+      const key = m+"-"+d;
+      const entry = state.years[y][key] || null;
+      const val = entry ? entry.v : "";
+
+      const sel = document.createElement("select");
+      sel.className = "psel" + (CLS[val] ? " "+CLS[val] : "");
+      sel.dataset.key = y + "|" + key;
+      sel.disabled = !editable;
+      OPTIONS.forEach(o=>{
+        const opt = document.createElement("option");
+        opt.value = o.v; opt.textContent = o.label;
+        if(o.v===val) opt.selected = true;
+        sel.appendChild(opt);
+      });
+
+      const tdS = document.createElement("td");
+      tdS.className = "stamp";
+      tdS.dataset.key = y + "|" + key;
+      tdS.textContent = entry ? fmtStamp(entry.by, entry.at) : "";
+
+      sel.onchange = ()=>{
+        const by = USERS[currentUser].stamp;
+        const at = todayISO();
+        if(sel.value){
+          state.years[y][key] = { v: sel.value, by: by, at: at };
+          tdS.textContent = fmtStamp(by, at);
+        } else {
+          delete state.years[y][key];
+          tdS.textContent = "";
+        }
+        sel.className = "psel" + (CLS[sel.value] ? " "+CLS[sel.value] : "");
+        pushPresence(y, key, sel.value, by, at);
+      };
+
+      const tdJ = document.createElement("td"); tdJ.className="dj"; tdJ.textContent = JOURS[dow];
+      const tdD = document.createElement("td"); tdD.className="dd"; tdD.textContent = d;
+      const tdP = document.createElement("td"); tdP.appendChild(sel);
+      tr.appendChild(tdJ); tr.appendChild(tdD); tr.appendChild(tdP); tr.appendChild(tdS);
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    box.appendChild(table);
+    monthsEl.appendChild(box);
+  }
+  wrap.appendChild(monthsEl);
+
+  if(yearNum === now.getFullYear()){
+    requestAnimationFrame(()=>{
+      const target = monthsEl.children[now.getMonth()];
+      if(target) wrap.scrollLeft = Math.max(0, target.offsetLeft - 22);
+    });
+  }
+}
+
+/* ================= ADMIN ================= */
+function openAdmin(){
+  show("view-admin");
+  fillAdminInputs();
+  refreshLockToggle();
+  renderRuleList();
+}
+function fillAdminInputs(){
+  document.getElementById("pwPiccolo").value = state.passwords.piccolo;
+  document.getElementById("pwAldon").value = state.passwords.aldon;
+  document.getElementById("pwPetits").value = state.passwords.petits;
+  document.getElementById("pwAdmin").value = state.passwords.admin;
+  document.getElementById("pwDelete").value = state.passwords.delete;
+}
+function refreshLockToggle(){
+  const b = document.getElementById("lockToggle");
+  if(state.locked){
+    b.textContent = "🔓 Déverrouiller le site";
+    b.className = "btn btn-sapin";
+  } else {
+    b.textContent = "🔒 Verrouiller le site";
+    b.className = "btn btn-danger";
+  }
+}
+function toggleLock(){
+  state.locked = !state.locked;
+  refreshLockToggle(); renderLockUI();
+  pushConfig("locked", state.locked ? "1" : "0");
+  toast(state.locked ? "Le refuge est verrouillé 🔒" : "Le refuge est de nouveau ouvert 🔓", state.locked);
+}
+function savePasswords(){
+  const p1 = document.getElementById("pwPiccolo").value.trim();
+  const p2 = document.getElementById("pwAldon").value.trim();
+  const p3 = document.getElementById("pwPetits").value.trim();
+  const p4 = document.getElementById("pwAdmin").value.trim();
+  const p5 = document.getElementById("pwDelete").value.trim();
+  if(!p1 || !p2 || !p3 || !p4 || !p5){ toast("Un mot de passe ne peut pas être vide", true); return; }
+  state.passwords = { piccolo: p1, aldon: p2, petits: p3, admin: p4, delete: p5 };
+  pushConfig("pw_piccolo", p1);
+  pushConfig("pw_aldon", p2);
+  pushConfig("pw_petits", p3);
+  pushConfig("pw_admin", p4);
+  pushConfig("pw_delete", p5);
+  toast("Mots de passe enregistrés ✔");
+}
+
+/* --- Gestion des règles (admin) --- */
+function renderRuleList(){
+  const ul = document.getElementById("ruleList");
+  ul.innerHTML = "";
+  if(state.regles.length === 0){
+    ul.innerHTML = '<li><span style="font-style:italic;color:#aeb6d2">Aucune règle — la banquise vit en anarchie joyeuse.</span></li>';
+    return;
+  }
+  state.regles.forEach(r=>{
+    const li = document.createElement("li");
+    const span = document.createElement("span");
+    span.textContent = r.texte;
+    const del = document.createElement("button");
+    del.className = "delrule";
+    del.title = "Supprimer cette règle";
+    del.textContent = "🗑️";
+    del.onclick = ()=>{
+      state.regles = state.regles.filter(x => x.id !== r.id);
+      renderRuleList();
+      pushRegleDelete(r.id);
+      toast("Règle supprimée", true);
+    };
+    li.appendChild(span); li.appendChild(del);
+    ul.appendChild(li);
+  });
+}
+async function addRule(){
+  const inp = document.getElementById("newRule");
+  const t = inp.value.trim();
+  if(!t){ toast("Écris d'abord la règle 🐧", true); return; }
+  inp.value = "";
+  await pushRegleAdd(t);
+  renderRuleList();
+  toast("Règle ajoutée au règlement intergalactique ✔");
+}
+
+/* ================= TOAST ================= */
+var toastTimer = null;
+function toast(msg, warn){
+  const old = document.querySelector(".toast");
+  if(old) old.remove();
+  const t = document.createElement("div");
+  t.className = "toast"+(warn?" warn":"");
+  t.textContent = msg;
+  document.body.appendChild(t);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.remove(), 2600);
+}
+</script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -183,6 +184,10 @@ button:focus-visible,select:focus-visible,input:focus-visible,[tabindex]:focus-v
   transition:background-color .15s ease;
 }
 .psel:disabled{opacity:.65;cursor:not-allowed}
+.psel.locked-other{opacity:.92;cursor:not-allowed;position:relative;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='11' height='12'><rect x='1.5' y='5' width='8' height='6' rx='1.4' fill='%238a7a55'/><path d='M3 5 V3.6 a2.5 2.5 0 0 1 5 0 V5' stroke='%238a7a55' stroke-width='1.5' fill='none'/></svg>");
+  background-repeat:no-repeat;background-position:right 7px center;padding-right:22px;
+}
 .psel.v-dispo{background-color:#e4efe7;color:#2e5a41;border-color:#bcd7c6}
 .psel.v-present{background-color:#e2ecf6;color:#2c5580;border-color:#bcd3ea}
 .psel.v-seulm{background-color:#faecd4;color:#8a5a12;border-color:#ecd3a3}
@@ -612,7 +617,7 @@ function onRemoteConfig(payload){
   if(!row || row.client_id === CLIENT_ID) return;
   applyConfigRows([row]);
   renderLockUI();
-  if(row.key === "locked") setSelectsEnabled(isAdmin() || !state.locked);
+  if(row.key === "locked") refreshEditability();
   if(!document.getElementById("view-admin").classList.contains("hidden")){
     fillAdminInputs(); refreshLockToggle();
   }
@@ -637,17 +642,35 @@ function onRemoteRegle(payload){
 
 /* Mise à jour douce d'une cellule : on ne touche jamais au menu
    que l'utilisateur est en train de manipuler. */
+function canEdit(entry){
+  if(isAdmin()) return true;
+  if(state.locked) return false;
+  return !entry || !entry.by || entry.by === USERS[currentUser].stamp;
+}
+function applyEditability(sel, entry){
+  const ok = canEdit(entry);
+  sel.disabled = !ok;
+  const lockedByOther = !ok && !!entry && !!entry.by && !state.locked;
+  sel.classList.toggle("locked-other", lockedByOther);
+  sel.title = lockedByOther ? "Réservé par " + entry.by + " — seul lui ou l'administrateur peut modifier cette case" : "";
+}
 function patchCell(y, key, val, by, at){
   if(state.activeTab !== y) return;
   const sel = document.querySelector('.psel[data-key="' + y + "|" + key + '"]');
   if(!sel || sel === document.activeElement) return;
   sel.value = val;
   sel.className = "psel" + (CLS[val] ? " " + CLS[val] : "");
+  applyEditability(sel, state.years[y] ? state.years[y][key] : null);
   const st = document.querySelector('.stamp[data-key="' + y + "|" + key + '"]');
   if(st) st.textContent = fmtStamp(by, at);
 }
-function setSelectsEnabled(on){
-  document.querySelectorAll(".psel").forEach(s => s.disabled = !on);
+function refreshEditability(){
+  const y = state.activeTab;
+  if(!y || y === "regles" || !state.years[y]) return;
+  document.querySelectorAll(".psel").forEach(s => {
+    const parts = (s.dataset.key || "").split("|");
+    applyEditability(s, state.years[y] ? state.years[y][parts[1]] : null);
+  });
 }
 function refreshIfVisible(){
   if(!document.getElementById("view-planning").classList.contains("hidden")){
@@ -930,7 +953,6 @@ function renderPlanning(){
   }
   const yearNum = parseInt(y,10);
   const now = new Date();
-  const editable = isAdmin() || !state.locked;
 
   const monthsEl = document.createElement("div");
   monthsEl.className = "months";
@@ -961,13 +983,13 @@ function renderPlanning(){
       const sel = document.createElement("select");
       sel.className = "psel" + (CLS[val] ? " "+CLS[val] : "");
       sel.dataset.key = y + "|" + key;
-      sel.disabled = !editable;
       OPTIONS.forEach(o=>{
         const opt = document.createElement("option");
         opt.value = o.v; opt.textContent = o.label;
         if(o.v===val) opt.selected = true;
         sel.appendChild(opt);
       });
+      applyEditability(sel, entry);
 
       const tdS = document.createElement("td");
       tdS.className = "stamp";
@@ -975,6 +997,14 @@ function renderPlanning(){
       tdS.textContent = entry ? fmtStamp(entry.by, entry.at) : "";
 
       sel.onchange = ()=>{
+        const current = state.years[y][key] || null;
+        if(!canEdit(current)){
+          // Garde-fou : la case appartient à quelqu'un d'autre
+          sel.value = current ? current.v : "";
+          sel.className = "psel" + (CLS[sel.value] ? " "+CLS[sel.value] : "");
+          toast("Cette case est réservée par " + (current && current.by ? current.by : "un autre Pingouin") + " 🔒", true);
+          return;
+        }
         const by = USERS[currentUser].stamp;
         const at = todayISO();
         if(sel.value){
